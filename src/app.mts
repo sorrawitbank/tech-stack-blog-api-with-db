@@ -17,11 +17,11 @@ app.use(
   })
 );
 
-app.use("/posts", postRouter);
-
-app.get("/health", (req, res) => {
-  return res.status(200).json({ message: "OK" });
+app.get("/", (req, res) => {
+  return res.status(200).json({ message: "Tech Stack Blog API with Database" });
 });
+
+app.use("/posts", postRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

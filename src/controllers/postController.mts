@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import type { CreatePostBody, PostBody } from "../types/body.ts";
 import type { PostIdParams } from "../types/params.ts";
 import type { GetPostsQuery } from "../types/query.ts";
-import AppError from "../errors/AppError.mts";
+import AppError from "../errors/AppError.ts";
 import PostService from "../services/postService.mts";
 
 const PostController = {

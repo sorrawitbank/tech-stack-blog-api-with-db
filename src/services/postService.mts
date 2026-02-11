@@ -1,4 +1,4 @@
-import AppError from "../errors/AppError.mts";
+import AppError from "../errors/AppError.ts";
 import CategoryRepository from "../repositories/categoryRepository.mts";
 import PostRepository from "../repositories/postRepository.mts";
 import StatusRepository from "../repositories/statusRepository.mts";
