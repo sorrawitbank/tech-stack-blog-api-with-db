@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import postRouter from "./routes/postRoute.mts";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -12,11 +13,14 @@ app.use(
       "http://localhost:5173", // Frontend local (Vite)
       "https://tech-stack-blog-tau.vercel.app",
     ],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   })
 );
 
+app.use("/posts", postRouter);
+
 app.get("/health", (req, res) => {
-  res.status(200).json({ message: "OK" });
+  return res.status(200).json({ message: "OK" });
 });
 
 app.listen(PORT, () => {
