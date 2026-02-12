@@ -1,5 +1,5 @@
-import db from "../db/db.ts";
-import { categories } from "../db/schema.ts";
+import db from "../db/db";
+import { categories } from "../db/schema";
 
 const CategoryRepository = {
   get: async () => {

@@ -1,9 +1,9 @@
 import type { Request, Response } from "express";
-import type { CreatePostBody, PostBody } from "../types/body.ts";
-import type { PostIdParams } from "../types/params.ts";
-import type { GetPostsQuery } from "../types/query.ts";
-import AppError from "../errors/AppError.ts";
-import PostService from "../services/postService.mts";
+import type { CreatePostBody, PostBody } from "../types/body";
+import type { PostIdParams } from "../types/params";
+import type { GetPostsQuery } from "../types/query";
+import AppError from "../errors/AppError";
+import PostService from "../services/postService";
 
 const PostController = {
   getPosts: async (req: Request<{}, {}, {}, GetPostsQuery>, res: Response) => {
@@ -45,9 +45,7 @@ const PostController = {
       })),
     };
 
-    return res.status(200).json({
-      data: postResponse,
-    });
+    return res.status(200).json(postResponse);
   },
 
   getPostById: async (req: Request<PostIdParams>, res: Response) => {
@@ -83,7 +81,7 @@ const PostController = {
       comments: result.comments,
     };
 
-    return res.status(200).json({ data: postResponse });
+    return res.status(200).json(postResponse);
   },
 
   createPost: async (req: Request<{}, {}, CreatePostBody>, res: Response) => {

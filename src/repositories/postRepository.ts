@@ -1,6 +1,6 @@
 import { and, count, desc, eq, exists, ilike, or } from "drizzle-orm";
-import db from "../db/db.ts";
-import { categories, comments, postCategories, posts } from "../db/schema.ts";
+import db from "../db/db";
+import { categories, comments, postCategories, posts } from "../db/schema";
 
 const PostRepository = {
   get: async (

@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import postRouter from "./routes/postRoute.mts";
+import postRouter from "./routes/postRoute";
 
 const app = express();
 const PORT = process.env.PORT || 4000;

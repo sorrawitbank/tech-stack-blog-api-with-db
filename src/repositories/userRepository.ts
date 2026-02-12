@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import db from "../db/db.ts";
-import { users } from "../db/schema.ts";
+import db from "../db/db";
+import { users } from "../db/schema";
 
 const UserRepository = {
   getById: async (userId: string) => {

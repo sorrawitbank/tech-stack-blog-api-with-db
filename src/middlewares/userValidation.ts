@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import type { UserIdBody } from "../types/body.ts";
+import type { UserIdBody } from "../types/body";
 import { validate as isValidUUID } from "uuid";
 
 const UserValidation = {

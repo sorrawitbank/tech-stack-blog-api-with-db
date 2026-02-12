@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
-import type { PostBody } from "../types/body.ts";
-import type { PostIdParams } from "../types/params.ts";
-import type { GetPostsQuery } from "../types/query.ts";
+import type { PostBody } from "../types/body";
+import type { PostIdParams } from "../types/params";
+import type { GetPostsQuery } from "../types/query";
 
 const PostValidation = {
   validatePostId: (

@@ -2,17 +2,17 @@
   "name": "tech-stack-blog-api-with-db",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "build": "tsc",
-    "start": "nodemon src/app.mts",
+    "dev": "nodemon src/app.ts",
+    "start": "node dist/app.js",
     "drizzle:push": "drizzle-kit push",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",

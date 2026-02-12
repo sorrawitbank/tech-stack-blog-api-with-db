@@ -1,5 +1,5 @@
-import db from "../db/db.ts";
-import { statuses } from "../db/schema.ts";
+import db from "../db/db";
+import { statuses } from "../db/schema";
 
 const StatusRepository = {
   get: async () => {

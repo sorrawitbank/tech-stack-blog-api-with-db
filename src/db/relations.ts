@@ -7,7 +7,7 @@ import {
   likes,
   categories,
   postCategories,
-} from "./schema.ts";
+} from "./schema";
 
 export const postsRelations = relations(posts, ({ one, many }) => ({
   status: one(statuses, {

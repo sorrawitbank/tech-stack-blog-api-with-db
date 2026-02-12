@@ -1,8 +1,8 @@
-import AppError from "../errors/AppError.ts";
-import CategoryRepository from "../repositories/categoryRepository.mts";
-import PostRepository from "../repositories/postRepository.mts";
-import StatusRepository from "../repositories/statusRepository.mts";
-import UserRepository from "../repositories/userRepository.mts";
+import AppError from "../errors/AppError";
+import CategoryRepository from "../repositories/categoryRepository";
+import PostRepository from "../repositories/postRepository";
+import StatusRepository from "../repositories/statusRepository";
+import UserRepository from "../repositories/userRepository";
 
 const PostService = {
   getPosts: async (
