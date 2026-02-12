@@ -4,9 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "build": "tsc",
-    "dev": "nodemon src/app.ts",
-    "start": "node dist/app.js",
+    "start": "nodemon src/app.ts",
     "drizzle:push": "drizzle-kit push",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
