@@ -165,13 +165,3 @@ export const postCategories = pgTable(
     }),
   ]
 );
-
-export const allTables = {
-  users,
-  categories,
-  statuses,
-  posts,
-  comments,
-  likes,
-  postCategories,
-};

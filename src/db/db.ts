@@ -1,8 +1,8 @@
 import "dotenv/config";
 import pg from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { allRelations } from "./relations";
-import { allTables } from "./schema";
+import * as allRelations from "./relations";
+import * as allSchema from "./schema";
 
 if (!process.env.DATABASE_URL) {
   console.log("DATABASE_URL is not set in environment variables");
@@ -14,7 +14,7 @@ const pool = new pg.Pool({
 });
 
 const db = drizzle(pool, {
-  schema: { ...allTables, ...allRelations },
+  schema: { ...allRelations, ...allSchema },
 });
 
 export default db;

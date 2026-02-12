@@ -18,7 +18,7 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-  return res.status(200).json({ message: "Tech Stack Blog API with Database" });
+  return res.status(200).json("Tech Stack Blog API with Database");
 });
 
 app.use("/posts", postRouter);
