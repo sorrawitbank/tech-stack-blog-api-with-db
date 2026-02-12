@@ -1,13 +1,14 @@
 import type { NextFunction, Request, Response } from "express";
 import type { UserIdBody } from "../types/body";
-import { validate as isValidUUID } from "uuid";
 
 const UserValidation = {
-  validateUserId: (
+  validateUserId: async (
     req: Request<{}, {}, Partial<UserIdBody>>,
     res: Response,
     next: NextFunction
   ) => {
+    const { validate: isValidUUID } = await import("uuid");
+
     if (!req.body) {
       return res.status(400).json({ message: "Body is required" });
     }
