@@ -13,3 +13,18 @@ export interface PostBody {
 }
 
 export type CreatePostBody = UserIdBody & PostBody;
+
+export interface LoginBody {
+  email: string;
+  password: string;
+}
+
+export interface RegisterBody extends LoginBody {
+  name: string;
+  username: string;
+}
+
+export interface ResetPasswordBody {
+  oldPassword: string;
+  newPassword: string;
+}

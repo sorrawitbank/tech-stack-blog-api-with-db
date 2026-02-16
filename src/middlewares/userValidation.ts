@@ -1,14 +1,15 @@
 import type { NextFunction, Request, Response } from "express";
 import type { UserIdBody } from "../types/body";
 
+const uuidRegex =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
 const UserValidation = {
   validateUserId: async (
     req: Request<{}, {}, Partial<UserIdBody>>,
     res: Response,
     next: NextFunction
   ) => {
-    const { validate: isValidUUID } = await import("uuid");
-
     if (!req.body) {
       return res.status(400).json({ message: "Body is required" });
     }
@@ -21,7 +22,7 @@ const UserValidation = {
     }
 
     // Type validations
-    if (!isValidUUID(userId)) {
+    if (!uuidRegex.test(userId)) {
       return res.status(400).json({ message: "User ID must be a UUID" });
     }
 

@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import authRoute from "./routes/authRoute";
 import postRouter from "./routes/postRoute";
 
 const app = express();
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/posts", postRouter);
+app.use("/auth", authRoute);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
