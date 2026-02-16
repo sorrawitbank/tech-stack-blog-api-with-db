@@ -69,13 +69,3 @@ export const postCategoriesRelations = relations(postCategories, ({ one }) => ({
 export const categoriesRelations = relations(categories, ({ many }) => ({
   postCategories: many(postCategories),
 }));
-
-export const allRelations = {
-  postsRelations,
-  statusesRelations,
-  usersRelations,
-  commentsRelations,
-  likesRelations,
-  postCategoriesRelations,
-  categoriesRelations,
-};

@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import authRoute from "./routes/authRoute";
 import postRouter from "./routes/postRoute";
 
 const app = express();
@@ -18,10 +19,11 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-  return res.status(200).json({ message: "Tech Stack Blog API with Database" });
+  return res.status(200).json("Tech Stack Blog API with Database");
 });
 
 app.use("/posts", postRouter);
+app.use("/auth", authRoute);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
