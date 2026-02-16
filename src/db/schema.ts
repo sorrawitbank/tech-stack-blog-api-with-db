@@ -1,18 +1,16 @@
 import {
   pgTable,
   unique,
-  check,
   uuid,
   text,
   serial,
+  index,
   foreignKey,
   integer,
   timestamp,
-  index,
   primaryKey,
   pgEnum,
 } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
 
 export const role = pgEnum("role", ["user", "admin"]);
 
@@ -25,13 +23,7 @@ export const users = pgTable(
     profilePic: text("profile_pic"),
     role: role().default("user").notNull(),
   },
-  (table) => [
-    unique("users_username_key").on(table.username),
-    check(
-      "users_role_check",
-      sql`(role)::text = ANY (ARRAY[('user'::character varying)::text, ('admin'::character varying)::text])`
-    ),
-  ]
+  (table) => [unique("users_username_key").on(table.username)]
 );
 
 export const categories = pgTable(
@@ -49,7 +41,7 @@ export const statuses = pgTable(
     id: serial().primaryKey().notNull(),
     name: text().notNull(),
   },
-  (table) => [unique("statuses_status_key").on(table.name)]
+  (table) => [unique("statuses_name_key").on(table.name)]
 );
 
 export const posts = pgTable(
@@ -71,11 +63,15 @@ export const posts = pgTable(
       .notNull(),
   },
   (table) => [
+    index("posts_status_id_idx").using(
+      "btree",
+      table.statusId.asc().nullsLast().op("int4_ops")
+    ),
     foreignKey({
       columns: [table.statusId],
       foreignColumns: [statuses.id],
       name: "posts_status_id_fkey",
-    }).onDelete("set null"),
+    }).onDelete("restrict"),
     foreignKey({
       columns: [table.userId],
       foreignColumns: [users.id],
@@ -96,6 +92,10 @@ export const comments = pgTable(
       .notNull(),
   },
   (table) => [
+    index("comments_post_id_idx").using(
+      "btree",
+      table.postId.asc().nullsLast().op("int4_ops")
+    ),
     foreignKey({
       columns: [table.postId],
       foreignColumns: [posts.id],
@@ -120,6 +120,10 @@ export const likes = pgTable(
       .notNull(),
   },
   (table) => [
+    index("likes_post_id_idx").using(
+      "btree",
+      table.postId.asc().nullsLast().op("int4_ops")
+    ),
     foreignKey({
       columns: [table.postId],
       foreignColumns: [posts.id],
