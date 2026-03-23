@@ -1,8 +1,13 @@
+import { format } from "date-fns";
+import { UTCDate } from "@date-fns/utc";
 import AppError from "../errors/AppError";
 import CategoryRepository from "../repositories/category.repository";
 import PostRepository from "../repositories/post.repository";
 import StatusRepository from "../repositories/status.repository";
-import UserRepository from "../repositories/user.repository";
+import supabaseAdmin from "../supabase/admin";
+import supabaseClient from "../supabase/client";
+
+const bucket = "post-assets";
 
 const PostService = {
   getPosts: async (
@@ -65,23 +70,18 @@ const PostService = {
 
   createPost: async (
     userId: string,
-    image: string,
     imageAlt: string | null,
     categories: string[],
     title: string,
     description: string,
     content: string,
-    status: string
+    status: string,
+    file: Express.Multer.File
   ) => {
     const lookup = {
-      user: (await UserRepository.getById(userId))[0],
       statuses: await StatusRepository.get(),
       categories: await CategoryRepository.get(),
     };
-
-    if (!lookup.user) {
-      throw new AppError("User not found", 404);
-    }
 
     if (!lookup.statuses.map((status) => status.name).includes(status)) {
       throw new AppError("Status not found", 404);
@@ -95,16 +95,13 @@ const PostService = {
     }
 
     const resolvedIds: {
-      user: string;
       status: number;
       categories: number[];
     } = {
-      user: "",
       status: 0,
       categories: [],
     };
 
-    resolvedIds.user = lookup.user.id;
     resolvedIds.status = lookup.statuses.find(
       (statusLookup) => statusLookup.name === status
     )!.id;
@@ -117,32 +114,75 @@ const PostService = {
       )
       .sort((a, b) => a - b);
 
-    await PostRepository.create(
-      resolvedIds.user,
-      image,
-      imageAlt,
-      resolvedIds.categories,
-      title,
-      description,
-      content,
-      resolvedIds.status
-    );
+    let filePath: string | undefined;
+
+    try {
+      // Upload pet image
+      const now = new UTCDate();
+      const fileExt = file.mimetype.split("/")[1];
+      filePath = `${title.replace(" ", "_")}-${format(
+        now,
+        "yyyyMMddHHmmss"
+      )}.${fileExt}`;
+
+      const { error } = await supabaseClient.storage
+        .from(bucket)
+        .upload(filePath, file.buffer, { contentType: file.mimetype });
+
+      if (error) {
+        throw error;
+      }
+
+      const { data } = supabaseClient.storage
+        .from(bucket)
+        .getPublicUrl(filePath);
+
+      const publicUrl = data.publicUrl;
+
+      await PostRepository.create(
+        userId,
+        publicUrl,
+        imageAlt,
+        resolvedIds.categories,
+        title,
+        description,
+        content,
+        resolvedIds.status
+      );
+    } catch {
+      // Rollback
+      if (filePath) {
+        await supabaseAdmin.storage.from(bucket).remove([filePath]);
+      }
+
+      throw new AppError("Failed to create post", 500);
+    }
   },
 
   updatePost: async (
+    userId: string,
     postId: number,
-    image: string,
     imageAlt: string | null,
     categories: string[],
     title: string,
     description: string,
     content: string,
-    status: string
+    status: string,
+    file: Express.Multer.File | undefined
   ) => {
     const lookup = {
+      posts: await PostRepository.getByUserId(userId),
       statuses: await StatusRepository.get(),
       categories: await CategoryRepository.get(),
     };
+
+    const lookupPostIds = lookup.posts.map((post) => post.id);
+
+    if (!lookupPostIds.includes(postId)) {
+      throw new AppError("Post not found or not owned by user", 404);
+    }
+
+    const post = lookup.posts.filter((post) => post.id === postId)[0];
 
     if (!lookup.statuses.map((status) => status.name).includes(status)) {
       throw new AppError("Status not found", 404);
@@ -175,20 +215,65 @@ const PostService = {
       )
       .sort((a, b) => a - b);
 
-    return await PostRepository.update(
-      postId,
-      image,
-      imageAlt,
-      resolvedIds.categories,
-      title,
-      description,
-      content,
-      resolvedIds.status
-    );
+    let filePath: string | undefined;
+
+    try {
+      let publicUrl: string | undefined;
+
+      // Upload pet image
+      if (file) {
+        const now = new UTCDate();
+        const fileExt = file.mimetype.split("/")[1];
+        filePath = `${title.replace(" ", "_")}-${format(
+          now,
+          "yyyyMMddHHmmss"
+        )}.${fileExt}`;
+
+        const { error } = await supabaseClient.storage
+          .from(bucket)
+          .upload(filePath, file.buffer, { contentType: file.mimetype });
+
+        if (error) {
+          throw error;
+        }
+
+        const { data } = supabaseClient.storage
+          .from(bucket)
+          .getPublicUrl(filePath);
+
+        publicUrl = data.publicUrl;
+      }
+
+      const result = await PostRepository.update(
+        postId,
+        publicUrl,
+        imageAlt,
+        resolvedIds.categories,
+        title,
+        description,
+        content,
+        resolvedIds.status
+      );
+
+      if (publicUrl) {
+        await supabaseAdmin.storage
+          .from(bucket)
+          .remove([post.image.split(`/${bucket}/`)[1]]);
+      }
+
+      return result;
+    } catch {
+      // Rollback
+      if (filePath) {
+        await supabaseAdmin.storage.from(bucket).remove([filePath]);
+      }
+
+      throw new AppError("Failed to create post", 500);
+    }
   },
 
   deletePost: async (postId: number) => {
-    return await PostRepository.delete(postId);
+    return PostRepository.delete(postId);
   },
 };
 

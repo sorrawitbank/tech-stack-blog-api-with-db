@@ -3,7 +3,6 @@ export interface UserIdBody {
 }
 
 export interface PostBody {
-  image: string;
   imageAlt?: string;
   categories: string[];
   title: string;
@@ -11,8 +10,6 @@ export interface PostBody {
   content: string;
   status: string;
 }
-
-export type CreatePostBody = UserIdBody & PostBody;
 
 export interface LoginBody {
   email: string;

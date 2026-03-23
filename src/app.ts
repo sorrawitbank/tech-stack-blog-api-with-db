@@ -1,7 +1,8 @@
-import express from "express";
 import cors from "cors";
+import express, { NextFunction, Request, Response } from "express";
 import authRoute from "./routes/auth.route";
 import postRouter from "./routes/post.route";
+import adminRouter from "./routes/admin.route";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -23,7 +24,19 @@ app.get("/", (req, res) => {
 });
 
 app.use("/posts", postRouter);
+app.use("/admin", adminRouter);
 app.use("/auth", authRoute);
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  if (err) {
+    const status = err.status || 500;
+    return res.status(status).json({
+      error: err.message || "Something went wrong",
+    });
+  }
+
+  next();
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

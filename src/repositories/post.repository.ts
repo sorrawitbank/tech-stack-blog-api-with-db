@@ -68,7 +68,7 @@ const PostRepository = {
   },
 
   getById: async (postId: number) => {
-    return await db.query.posts.findFirst({
+    return db.query.posts.findFirst({
       with: {
         user: true,
         status: true,
@@ -86,6 +86,28 @@ const PostRepository = {
         },
       },
       where: (posts) => eq(posts.id, postId),
+    });
+  },
+
+  getByUserId: async (userId: string) => {
+    return db.query.posts.findMany({
+      with: {
+        user: true,
+        status: true,
+        likes: true,
+        comments: {
+          with: {
+            user: true,
+          },
+          orderBy: [desc(comments.createdAt)],
+        },
+        postCategories: {
+          with: {
+            category: true,
+          },
+        },
+      },
+      where: (posts) => eq(posts.userId, userId),
     });
   },
 
@@ -124,7 +146,7 @@ const PostRepository = {
 
   update: async (
     postId: number,
-    image: string,
+    image: string | undefined,
     imageAlt: string | null,
     categoryIds: number[],
     title: string,
@@ -132,7 +154,7 @@ const PostRepository = {
     content: string,
     statusId: number
   ) => {
-    return await db.transaction(async (tx) => {
+    return db.transaction(async (tx) => {
       const result = await tx
         .update(posts)
         .set({
@@ -163,7 +185,7 @@ const PostRepository = {
   },
 
   delete: async (postId: number) => {
-    return await db.delete(posts).where(eq(posts.id, postId));
+    return db.delete(posts).where(eq(posts.id, postId));
   },
 };
 

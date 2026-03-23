@@ -26,22 +26,25 @@ const PostValidation = {
   },
 
   validatePostBody: (
-    req: Request<{}, {}, Partial<PostBody>>,
+    req: Request<{}, {}, { body: string }>, //Partial<PostBody>>,
     res: Response,
     next: NextFunction
   ) => {
-    if (!req.body) {
-      return res.status(400).json({ message: "Body is required" });
+    if (!req.body?.body) {
+      return res.status(400).json({ error: "Body is required" });
     }
 
-    const { image, imageAlt, categories, title, description, content, status } =
-      req.body;
+    let body: Partial<PostBody>;
+
+    try {
+      body = JSON.parse(req.body.body);
+    } catch {
+      return res.status(400).json({ error: "Invalid JSON body" });
+    }
+
+    const { imageAlt, categories, title, description, content, status } = body;
 
     // Check for required fields
-    if (!image) {
-      return res.status(400).json({ message: "Image URL is required" });
-    }
-
     if (!categories) {
       return res.status(400).json({ message: "Categories are required" });
     }
@@ -63,10 +66,6 @@ const PostValidation = {
     }
 
     // Type validations
-    if (typeof image !== "string") {
-      return res.status(400).json({ message: "Image URL must be a string" });
-    }
-
     if (imageAlt && typeof imageAlt !== "string") {
       return res.status(400).json({
         message: "Image alternative text must be a string",
@@ -121,9 +120,9 @@ const PostValidation = {
         (typeof limit === "undefined" || parsedlimit > 0)
       )
     ) {
-      return res
-        .status(400)
-        .json({ message: "Page and limit must be positive numbers" });
+      return res.status(400).json({
+        message: "Page and limit must be positive numbers",
+      });
     }
 
     next();

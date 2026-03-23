@@ -1,8 +1,9 @@
 import type { Request, Response } from "express";
-import type { CreatePostBody, PostBody } from "../types/body";
+import type { PostBody } from "../types/body";
 import type { PostIdParams } from "../types/params";
 import type { GetPostsQuery } from "../types/query";
 import AppError from "../errors/AppError";
+import AuthService from "../services/auth.service";
 import PostService from "../services/post.service";
 
 const PostController = {
@@ -84,28 +85,29 @@ const PostController = {
     return res.status(200).json(postResponse);
   },
 
-  createPost: async (req: Request<{}, {}, CreatePostBody>, res: Response) => {
-    const {
-      userId,
-      image,
-      imageAlt,
-      categories,
-      title,
-      description,
-      content,
-      status,
-    } = req.body;
+  createPost: async (req: Request<{}, {}, { body: string }>, res: Response) => {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ error: "Unauthorized: Token missing" });
+    }
+
+    const body: PostBody = JSON.parse(req.body.body);
+    const { imageAlt, categories, title, description, content, status } = body;
+    const file = req.file!;
 
     try {
+      const user = await AuthService.getUser(token);
+
       await PostService.createPost(
-        userId,
-        image.trim(),
+        user.data.user.id,
         imageAlt ? imageAlt.trim() : null,
         [...new Set(categories.map((category) => category.trim()))],
         title.trim(),
         description.trim(),
         content.trim(),
-        status.trim()
+        status.trim(),
+        file
       );
     } catch (error) {
       // Client error from service (e.g. User/Status/Category not found)
@@ -122,24 +124,34 @@ const PostController = {
   },
 
   updatePost: async (
-    req: Request<PostIdParams, {}, PostBody>,
+    req: Request<PostIdParams, {}, { body: string }>,
     res: Response
   ) => {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ error: "Unauthorized: Token missing" });
+    }
+
     const postId = Number(req.params.postId);
-    const { image, imageAlt, categories, title, description, content, status } =
-      req.body;
+    const body: PostBody = JSON.parse(req.body.body);
+    const { imageAlt, categories, title, description, content, status } = body;
+    const file = req.file;
     let result;
 
     try {
+      const user = await AuthService.getUser(token);
+
       result = await PostService.updatePost(
+        user.data.user.id,
         postId,
-        image.trim(),
         imageAlt ? imageAlt.trim() : null,
         [...new Set(categories.map((category) => category.trim()))],
         title.trim(),
         description.trim(),
         content.trim(),
-        status.trim()
+        status.trim(),
+        file
       );
     } catch (error) {
       // Client error from service (e.g. Status/Category not found)
