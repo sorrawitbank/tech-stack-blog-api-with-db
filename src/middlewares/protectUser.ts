@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import supabase from "../supabase/client";
+import supabaseClient from "../supabase/client";
 
 async function protectUser(req: Request, res: Response, next: NextFunction) {
   const token = req.headers.authorization?.split(" ")[1];
@@ -9,7 +9,7 @@ async function protectUser(req: Request, res: Response, next: NextFunction) {
   }
 
   try {
-    const { data, error: authError } = await supabase.auth.getUser(token);
+    const { data, error: authError } = await supabaseClient.auth.getUser(token);
 
     if (authError || !data.user) {
       return res.status(401).json({ message: "Unauthorized: Invalid token" });
