@@ -6,6 +6,19 @@ const MAX_SIZE = 5 * 1024 * 1024; // 10MB
 const storage = multer.memoryStorage();
 
 const UploadValidation = {
+  requireFile: (fieldName: string) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+      if (!req.file) {
+        return res.status(400).json({
+          message: `${fieldName.slice(0, 1).toUpperCase()}${fieldName.slice(
+            1
+          )} is required`,
+        });
+      }
+      next();
+    };
+  },
+
   image: multer({
     storage,
     limits: { fieldSize: MAX_SIZE, files: 1 },

@@ -1,5 +1,10 @@
-export interface UserIdBody {
-  userId: string;
+export interface UserBody {
+  name: string;
+  username: string;
+}
+
+export interface AdminUserBody extends UserBody {
+  bio: string;
 }
 
 export interface PostBody {

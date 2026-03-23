@@ -3,6 +3,7 @@ import {
   unique,
   uuid,
   text,
+  varchar,
   serial,
   index,
   foreignKey,
@@ -21,6 +22,7 @@ export const users = pgTable(
     username: text().notNull(),
     name: text().notNull(),
     profilePic: text("profile_pic"),
+    bio: varchar({ length: 120 }),
     role: role().default("user").notNull(),
   },
   (table) => [unique("users_username_key").on(table.username)]
