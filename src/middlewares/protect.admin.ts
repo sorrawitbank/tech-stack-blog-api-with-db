@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import UserRepository from "../repositories/userRepository";
+import UserRepository from "../repositories/user.repository";
 import supabaseClient from "../supabase/client";
 
 async function protectAdmin(req: Request, res: Response, next: NextFunction) {

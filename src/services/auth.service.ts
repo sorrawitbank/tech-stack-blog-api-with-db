@@ -1,5 +1,5 @@
 import AppError from "../errors/AppError";
-import UserRepository from "../repositories/userRepository";
+import UserRepository from "../repositories/user.repository";
 import supabaseClient from "../supabase/client";
 
 const AuthService = {
@@ -7,7 +7,7 @@ const AuthService = {
     name: string,
     username: string,
     email: string,
-    password: string,
+    password: string
   ) => {
     const lookup = {
       user: (await UserRepository.getByUsername(username))[0],
@@ -46,7 +46,7 @@ const AuthService = {
       ) {
         throw new AppError(
           "Your password is incorrect or this email doesn't exist",
-          400,
+          400
         );
       }
 
@@ -69,7 +69,7 @@ const AuthService = {
   resetPassword: async (
     token: string,
     oldPassword: string,
-    newPassword: string,
+    newPassword: string
   ) => {
     const { data, error: authError } = await supabaseClient.auth.getUser(token);
 

@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import type { LoginBody, RegisterBody, ResetPasswordBody } from "../types/body";
 import AppError from "../errors/AppError";
-import AuthService from "../services/authService";
+import AuthService from "../services/auth.service";
 
 const AuthController = {
   register: async (req: Request<{}, {}, RegisterBody>, res: Response) => {

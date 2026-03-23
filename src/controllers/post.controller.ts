@@ -3,7 +3,7 @@ import type { CreatePostBody, PostBody } from "../types/body";
 import type { PostIdParams } from "../types/params";
 import type { GetPostsQuery } from "../types/query";
 import AppError from "../errors/AppError";
-import PostService from "../services/postService";
+import PostService from "../services/post.service";
 
 const PostController = {
   getPosts: async (req: Request<{}, {}, {}, GetPostsQuery>, res: Response) => {
