@@ -14,13 +14,15 @@ const PostService = {
     page: number,
     limit: number,
     category: string | null,
-    keyword: string | null
+    keyword: string | null,
+    statusId: number | null
   ) => {
     const { result, totalPosts } = await PostRepository.get(
       page,
       limit,
       category,
-      keyword
+      keyword,
+      statusId
     );
 
     return {

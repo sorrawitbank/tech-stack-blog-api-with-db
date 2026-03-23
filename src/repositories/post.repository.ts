@@ -7,7 +7,8 @@ const PostRepository = {
     page: number,
     limit: number,
     category: string | null,
-    keyword: string | null
+    keyword: string | null,
+    statusId: number | null
   ) => {
     const offset = (page - 1) * limit;
     const filters = [];
@@ -39,6 +40,10 @@ const PostRepository = {
             )
         )
       );
+    }
+
+    if (statusId) {
+      filters.push(eq(posts.statusId, statusId));
     }
 
     const result = await db.query.posts.findMany({

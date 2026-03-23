@@ -19,7 +19,8 @@ const PostController = {
         page,
         limit,
         category ? category.trim() : null,
-        keyword ? keyword.trim() : null
+        keyword ? keyword.trim() : null,
+        2
       );
     } catch {
       return res.status(500).json({
