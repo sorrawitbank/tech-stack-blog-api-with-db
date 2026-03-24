@@ -5,6 +5,32 @@ import AuthService from "../services/auth.service";
 import UserService from "../services/user.service";
 
 const UserController = {
+  getAdmin: async (req: Request, res: Response) => {
+    let result;
+
+    try {
+      result = await UserService.getAdmin();
+    } catch {
+      return res.status(500).json({
+        message: "Server could not get admin because of database connection",
+      });
+    }
+
+    if (!result) {
+      return res.status(404).json({
+        message: "Server could not find an admin",
+      });
+    }
+
+    const adminResponse = {
+      name: result.name,
+      bio: result.bio,
+      profilePic: result.profilePic,
+    };
+
+    return res.status(200).json(adminResponse)
+  },
+
   updateUser: async (req: Request<{}, {}, { body: string }>, res: Response) => {
     const token = req.headers.authorization?.split(" ")[1];
 

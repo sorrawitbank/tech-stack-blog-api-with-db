@@ -8,6 +8,10 @@ import supabaseClient from "../supabase/client";
 const bucket = "user-assets";
 
 const UserService = {
+  getAdmin: async () => {
+    return UserRepository.getAdmin();
+  },
+
   updateUser: async (
     userId: string,
     name: string,

@@ -70,6 +70,7 @@ const AuthController = {
       email: result.data.user.email!,
       username: result.user.username,
       name: result.user.name,
+      bio: result.user.bio,
       profilePic: result.user.profilePic,
       role: result.user.role,
     };

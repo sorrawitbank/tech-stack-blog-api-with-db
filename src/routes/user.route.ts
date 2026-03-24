@@ -6,11 +6,15 @@ import UserValidation from "../middlewares/user.validation";
 
 const userRouter = Router();
 
-userRouter.use(protectUser);
+userRouter.get("/admin", UserController.getAdmin);
 
 userRouter.put(
   "/profile",
-  [UploadValidation.image.single("image"), UserValidation.validateUserBody],
+  [
+    UploadValidation.image.single("image"),
+    UserValidation.validateUserBody,
+    protectUser,
+  ],
   UserController.updateUser
 );
 

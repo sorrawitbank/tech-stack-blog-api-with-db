@@ -11,6 +11,10 @@ const UserRepository = {
     return db.select().from(users).where(eq(users.username, username));
   },
 
+  getAdmin: async () => {
+    return (await db.select().from(users).where(eq(users.role, "admin")))[0];
+  },
+
   create: async (userId: string, username: string, name: string) => {
     await db.insert(users).values({ id: userId, name, username });
   },
