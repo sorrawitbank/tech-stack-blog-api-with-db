@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+import { UTCDate } from "@date-fns/utc";
 import AppError from "../errors/AppError";
 import UserRepository from "../repositories/user.repository";
 import supabaseAdmin from "../supabase/admin";
@@ -17,7 +19,7 @@ const UserService = {
       user: (await UserRepository.getByUsername(username))[0],
     };
 
-    if (lookup.user) {
+    if (lookup.user && lookup.user.id !== userId) {
       throw new AppError("This username is already taken", 400);
     }
 
@@ -29,8 +31,9 @@ const UserService = {
 
       // Upload pet image
       if (file) {
+        const now = new UTCDate();
         const fileExt = file.mimetype.split("/")[1];
-        filePath = `${userId}.${fileExt}`;
+        filePath = `${userId}-${format(now, "yyyyMMddHHmmss")}.${fileExt}`;
 
         const { error } = await supabaseClient.storage
           .from(bucket)
@@ -62,13 +65,13 @@ const UserService = {
       }
 
       return result;
-    } catch {
+    } catch (error) {
       // Rollback
       if (filePath) {
         await supabaseAdmin.storage.from(bucket).remove([filePath]);
       }
 
-      throw new AppError("Failed to create post", 500);
+      throw new AppError("Failed to update user", 500);
     }
   },
 };

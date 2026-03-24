@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import multer from "multer";
 
-const MAX_SIZE = 5 * 1024 * 1024; // 10MB
+const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
 const storage = multer.memoryStorage();
 
@@ -23,7 +23,12 @@ const UploadValidation = {
     storage,
     limits: { fieldSize: MAX_SIZE, files: 1 },
     fileFilter: (req, file, cb) => {
-      const allowedTypes = ["image/png", "image/jpg", "image/jpeg"];
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp",
+      ];
 
       if (!allowedTypes.includes(file.mimetype)) {
         const error = new Error("Only .png .jpg .jpeg allowed") as any;

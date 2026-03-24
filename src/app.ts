@@ -1,8 +1,9 @@
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
+import adminRouter from "./routes/admin.route";
 import authRoute from "./routes/auth.route";
 import postRouter from "./routes/post.route";
-import adminRouter from "./routes/admin.route";
+import userRouter from "./routes/user.route";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -24,8 +25,9 @@ app.get("/", (req, res) => {
 });
 
 app.use("/posts", postRouter);
-app.use("/admin", adminRouter);
 app.use("/auth", authRoute);
+app.use("/user", userRouter)
+app.use("/admin", adminRouter);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   if (err) {
