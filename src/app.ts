@@ -2,6 +2,7 @@ import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 import adminRouter from "./routes/admin.route";
 import authRoute from "./routes/auth.route";
+import categoryRoute from "./routes/category.routes";
 import postRouter from "./routes/post.route";
 import userRouter from "./routes/user.route";
 
@@ -24,10 +25,11 @@ app.get("/", (req, res) => {
   return res.status(200).json("Tech Stack Blog API with Database");
 });
 
-app.use("/posts", postRouter);
-app.use("/auth", authRoute);
-app.use("/user", userRouter)
 app.use("/admin", adminRouter);
+app.use("/auth", authRoute);
+app.use("/categories", categoryRoute);
+app.use("/posts", postRouter);
+app.use("/user", userRouter);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   if (err) {

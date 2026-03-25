@@ -16,6 +16,10 @@ export interface PostBody {
   status: string;
 }
 
+export interface CategoryBody {
+  name: string;
+}
+
 export interface LoginBody {
   email: string;
   password: string;

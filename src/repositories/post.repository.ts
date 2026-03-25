@@ -35,7 +35,7 @@ const PostRepository = {
             .where(
               and(
                 eq(postCategories.postId, posts.id),
-                ilike(categories.name, `%${category}%`)
+                eq(categories.name, category)
               )
             )
         )
