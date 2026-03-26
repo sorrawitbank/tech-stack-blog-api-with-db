@@ -37,8 +37,32 @@ const AuthValidation = {
       return res.status(400).json({ message: "Name must be a string" });
     }
 
+    if (name.trim().length < 2) {
+      return res.status(400).json({
+        message: "Name must be at least 2 characters long",
+      });
+    }
+
+    if (name.trim().length > 50) {
+      return res.status(400).json({
+        message: "Name must be less than 50 characters long",
+      });
+    }
+
     if (typeof username !== "string") {
       return res.status(400).json({ message: "Username must be a string" });
+    }
+
+    if (username.trim().length < 4) {
+      return res.status(400).json({
+        message: "Username must be at least 4 characters long",
+      });
+    }
+
+    if (username.trim().length > 50) {
+      return res.status(400).json({
+        message: "Username must be less than 50 characters long",
+      });
     }
 
     if (!emailRegex.test(email)) {

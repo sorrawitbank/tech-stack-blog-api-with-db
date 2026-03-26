@@ -94,6 +94,12 @@ const PostValidation = {
       });
     }
 
+    if (description.trim().length > 120) {
+      return res.status(400).json({
+        error: "Description must be less than 120 characters long",
+      });
+    }
+
     if (typeof content !== "string") {
       return res.status(400).json({ message: "Content must be a string" });
     }

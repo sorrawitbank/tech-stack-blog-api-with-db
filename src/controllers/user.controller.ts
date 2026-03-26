@@ -28,7 +28,7 @@ const UserController = {
       profilePic: result.profilePic,
     };
 
-    return res.status(200).json(adminResponse)
+    return res.status(200).json(adminResponse);
   },
 
   updateUser: async (req: Request<{}, {}, { body: string }>, res: Response) => {
@@ -48,8 +48,8 @@ const UserController = {
 
       result = await UserService.updateUser(
         user.data.user.id,
-        name,
-        username,
+        name.trim(),
+        username.trim(),
         file,
         undefined
       );
@@ -93,10 +93,10 @@ const UserController = {
 
       result = await UserService.updateUser(
         user.data.user.id,
-        name,
-        username,
+        name.trim(),
+        username.trim(),
         file,
-        bio
+        bio.trim()
       );
     } catch (error) {
       // Client error from service
