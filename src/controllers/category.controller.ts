@@ -29,7 +29,7 @@ const CategoryController = {
     const { name } = req.body;
 
     try {
-      await CategoryService.createCategory(name);
+      await CategoryService.createCategory(name.trim());
     } catch (error) {
       // Client error from service
       if (error instanceof AppError) {
@@ -54,7 +54,7 @@ const CategoryController = {
     let result;
 
     try {
-      result = await CategoryService.updateCategory(categoryId, name);
+      result = await CategoryService.updateCategory(categoryId, name.trim());
     } catch (error) {
       // Client error from service
       if (error instanceof AppError) {

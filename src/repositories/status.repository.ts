@@ -3,7 +3,7 @@ import { statuses } from "../db/schema";
 
 const StatusRepository = {
   get: async () => {
-    return await db.select().from(statuses);
+    return db.select().from(statuses);
   },
 };
 

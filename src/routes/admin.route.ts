@@ -13,7 +13,7 @@ const adminRouter = Router();
 adminRouter.use(protectAdmin);
 
 adminRouter.post(
-  "/category",
+  "/categories",
   [CategoryValidation.validateCategoryBody],
   CategoryController.createCategory
 );
@@ -31,7 +31,7 @@ adminRouter.put(
 );
 
 adminRouter.put(
-  "/category/:categoryId",
+  "/categories/:categoryId",
   [
     CategoryValidation.validateCategoryId,
     CategoryValidation.validateCategoryBody,
@@ -46,7 +46,7 @@ adminRouter.put(
 );
 
 adminRouter.delete(
-  "/category/:categoryId",
+  "/categories/:categoryId",
   [CategoryValidation.validateCategoryId],
   CategoryController.deleteCategory
 );
