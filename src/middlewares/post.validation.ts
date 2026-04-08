@@ -12,13 +12,9 @@ const PostValidation = {
     const { postId } = req.params;
     const parsedPostId = Number(postId);
 
-    if (!parsedPostId && parsedPostId !== 0) {
-      return res.status(400).json({ message: "Post ID must be a number" });
-    }
-
-    if (parsedPostId <= 0) {
+    if (!Number.isInteger(parsedPostId) || parsedPostId <= 0) {
       return res.status(400).json({
-        message: "Post ID must be a positive number",
+        message: "Post ID must be a positive integer",
       });
     }
 

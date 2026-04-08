@@ -11,13 +11,9 @@ const CategoryValidation = {
     const { categoryId } = req.params;
     const parsedCategoryId = Number(categoryId);
 
-    if (!parsedCategoryId && parsedCategoryId !== 0) {
-      return res.status(400).json({ message: "Category ID must be a number" });
-    }
-
-    if (parsedCategoryId <= 0) {
+    if (!Number.isInteger(parsedCategoryId) || parsedCategoryId <= 0) {
       return res.status(400).json({
-        message: "Category ID must be a positive number",
+        message: "Category ID must be a positive integer",
       });
     }
 
@@ -45,13 +41,13 @@ const CategoryValidation = {
       return res.status(400).json({ message: "Name must be a string" });
     }
 
-    if (name.length < 2) {
+    if (name.trim().length < 2) {
       return res.status(400).json({
         message: "Name must be at least 2 characters long",
       });
     }
 
-    if (name.length > 20) {
+    if (name.trim().length > 20) {
       return res.status(400).json({
         message: "Name must be less than 20 characters long",
       });
