@@ -184,8 +184,6 @@ const PostService = {
       throw new AppError("Post not found or not owned by user", 404);
     }
 
-    const post = lookup.posts.filter((post) => post.id === postId)[0];
-
     if (!lookup.statuses.map((status) => status.name).includes(status)) {
       throw new AppError("Status not found", 404);
     }
@@ -217,6 +215,7 @@ const PostService = {
       )
       .sort((a, b) => a - b);
 
+    const post = lookup.posts.filter((post) => post.id === postId)[0];
     let filePath: string | undefined;
 
     try {

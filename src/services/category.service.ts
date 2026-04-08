@@ -23,7 +23,7 @@ const CategoryService = {
       category: (await CategoryRepository.getByName(name))[0],
     };
 
-    if (lookup.category) {
+    if (lookup.category && lookup.category.id != categoryId) {
       throw new AppError("Category already exists", 400);
     }
 
