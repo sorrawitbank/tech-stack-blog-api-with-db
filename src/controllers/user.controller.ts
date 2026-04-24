@@ -35,7 +35,7 @@ const UserController = {
     const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
-      return res.status(401).json({ error: "Unauthorized: Token missing" });
+      return res.status(401).json({ message: "Unauthorized: Token missing" });
     }
 
     const body: UserBody = JSON.parse(req.body.body);
@@ -80,7 +80,7 @@ const UserController = {
     const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
-      return res.status(401).json({ error: "Unauthorized: Token missing" });
+      return res.status(401).json({ message: "Unauthorized: Token missing" });
     }
 
     const body: AdminUserBody = JSON.parse(req.body.body);

@@ -8,7 +8,7 @@ const UserValidation = {
     next: NextFunction
   ) => {
     if (!req.body?.body) {
-      return res.status(400).json({ error: "Body is required" });
+      return res.status(400).json({ message: "Body is required" });
     }
 
     let body: Partial<UserBody>;
@@ -16,7 +16,7 @@ const UserValidation = {
     try {
       body = JSON.parse(req.body.body);
     } catch {
-      return res.status(400).json({ error: "Invalid JSON body" });
+      return res.status(400).json({ message: "Invalid JSON body" });
     }
 
     const { name, username } = body;
@@ -72,7 +72,7 @@ const UserValidation = {
     next: NextFunction
   ) => {
     if (!req.body?.body) {
-      return res.status(400).json({ error: "Body is required" });
+      return res.status(400).json({ message: "Body is required" });
     }
 
     let body: Partial<AdminUserBody>;
@@ -80,7 +80,7 @@ const UserValidation = {
     try {
       body = JSON.parse(req.body.body);
     } catch {
-      return res.status(400).json({ error: "Invalid JSON body" });
+      return res.status(400).json({ message: "Invalid JSON body" });
     }
 
     const { name, username, bio } = body;
@@ -134,7 +134,7 @@ const UserValidation = {
 
       if (bio.trim().length > 400) {
         return res.status(400).json({
-          error: "Bio must be less than 400 characters long",
+          message: "Bio must be less than 400 characters long",
         });
       }
     }

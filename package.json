@@ -4,9 +4,10 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon src/app.ts",
-    "drizzle:pull": "drizzle-kit pull",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "dev": "nodemon src/app.ts",
+    "start": "node dist/app.js",
+    "drizzle:pull": "drizzle-kit pull"
   },
   "keywords": [],
   "author": "",

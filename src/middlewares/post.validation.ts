@@ -27,7 +27,7 @@ const PostValidation = {
     next: NextFunction
   ) => {
     if (!req.body?.body) {
-      return res.status(400).json({ error: "Body is required" });
+      return res.status(400).json({ message: "Body is required" });
     }
 
     let body: Partial<PostBody>;
@@ -35,7 +35,7 @@ const PostValidation = {
     try {
       body = JSON.parse(req.body.body);
     } catch {
-      return res.status(400).json({ error: "Invalid JSON body" });
+      return res.status(400).json({ message: "Invalid JSON body" });
     }
 
     const { imageAlt, categories, title, description, content, status } = body;
@@ -62,10 +62,19 @@ const PostValidation = {
     }
 
     // Type validations
-    if (imageAlt && typeof imageAlt !== "string") {
-      return res.status(400).json({
-        message: "Image alternative text must be a string",
-      });
+    if (imageAlt) {
+      if (typeof imageAlt !== "string") {
+        return res.status(400).json({
+          message: "Image alternative text must be a string",
+        });
+      }
+
+      if (imageAlt.trim().length > 40) {
+        return res.status(400).json({
+          message:
+            "Image alternative text must be less than 40 characters long",
+        });
+      }
     }
 
     if (!Array.isArray(categories)) {
@@ -84,6 +93,12 @@ const PostValidation = {
       return res.status(400).json({ message: "Title must be a string" });
     }
 
+    if (title.trim().length > 80) {
+      return res.status(400).json({
+        message: "Title must be less than 80 characters long",
+      });
+    }
+
     if (typeof description !== "string") {
       return res.status(400).json({
         message: "Description must be a string",
@@ -92,7 +107,7 @@ const PostValidation = {
 
     if (description.trim().length > 120) {
       return res.status(400).json({
-        error: "Description must be less than 120 characters long",
+        message: "Description must be less than 120 characters long",
       });
     }
 
@@ -112,18 +127,28 @@ const PostValidation = {
     res: Response,
     next: NextFunction
   ) => {
-    const { page, limit } = req.query;
+    const { page, limit, statusId } = req.query;
     const parsedPage = Number(page);
     const parsedlimit = Number(limit);
+    const parsedstatusId = Number(statusId);
 
     if (
-      !(
-        (typeof page === "undefined" || parsedPage > 0) &&
-        (typeof limit === "undefined" || parsedlimit > 0)
-      )
+      (typeof page !== "undefined" &&
+        !(Number.isInteger(parsedPage) && parsedPage > 0)) ||
+      (typeof limit !== "undefined" &&
+        !(Number.isInteger(parsedlimit) && parsedlimit > 0))
     ) {
       return res.status(400).json({
-        message: "Page and limit must be positive numbers",
+        message: "Page and limit must be positive integers",
+      });
+    }
+
+    if (
+      typeof statusId !== "undefined" &&
+      !(Number.isInteger(parsedstatusId) && parsedstatusId > 0)
+    ) {
+      return res.status(400).json({
+        message: "status ID must be a positive integer",
       });
     }
 
