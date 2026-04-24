@@ -12,6 +12,53 @@ const PostController = {
     const limit = Number(req.query.limit) || 6;
     const category = req.query.category;
     const keyword = req.query.keyword;
+    const statusId = Number(req.query.statusId) || null;
+    let result;
+
+    try {
+      result = await PostService.getPosts(
+        page,
+        limit,
+        category ? category.trim() : null,
+        keyword ? keyword.trim() : null,
+        statusId
+      );
+    } catch {
+      return res.status(500).json({
+        message: "Server could not read posts because of database connection",
+      });
+    }
+
+    const postResponse = {
+      totalPosts: result.totalPosts,
+      totalPages: result.totalPages,
+      currentPage: page,
+      limit: limit,
+      posts: result.posts.map((post) => ({
+        id: post.id,
+        author: post.author,
+        image: post.image,
+        imageAlt: post.imageAlt,
+        categories: post.categories,
+        title: post.title,
+        description: post.description,
+        content: post.content,
+        status: post.status,
+        createdAt: post.createdAt,
+      })),
+    };
+
+    return res.status(200).json(postResponse);
+  },
+
+  getPublishedPosts: async (
+    req: Request<{}, {}, {}, GetPostsQuery>,
+    res: Response
+  ) => {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 6;
+    const category = req.query.category;
+    const keyword = req.query.keyword;
     let result;
 
     try {
@@ -55,6 +102,39 @@ const PostController = {
     let result;
 
     try {
+      result = await PostService.getPostById(postId, false);
+    } catch {
+      return res.status(500).json({
+        message: "Server could not read post because of database connection",
+      });
+    }
+
+    if (!result) {
+      return res.status(404).json({
+        message: "Server could not find a requested post to read",
+      });
+    }
+
+    const postResponse = {
+      id: result.id,
+      image: result.image,
+      imageAlt: result.imageAlt,
+      categories: result.categories,
+      title: result.title,
+      description: result.description,
+      content: result.content,
+      status: result.status,
+      createdAt: result.createdAt,
+    };
+
+    return res.status(200).json(postResponse);
+  },
+
+  getPublishedPostById: async (req: Request<PostIdParams>, res: Response) => {
+    const postId = Number(req.params.postId);
+    let result;
+
+    try {
       result = await PostService.getPostById(postId);
     } catch {
       return res.status(500).json({
@@ -90,7 +170,7 @@ const PostController = {
     const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
-      return res.status(401).json({ error: "Unauthorized: Token missing" });
+      return res.status(401).json({ message: "Unauthorized: Token missing" });
     }
 
     const body: PostBody = JSON.parse(req.body.body);
@@ -131,7 +211,7 @@ const PostController = {
     const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
-      return res.status(401).json({ error: "Unauthorized: Token missing" });
+      return res.status(401).json({ message: "Unauthorized: Token missing" });
     }
 
     const postId = Number(req.params.postId);

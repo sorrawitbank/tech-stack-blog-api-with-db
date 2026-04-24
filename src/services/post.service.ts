@@ -42,10 +42,12 @@ const PostService = {
     };
   },
 
-  getPostById: async (postId: number) => {
+  getPostById: async (postId: number, onlyPublished: boolean = true) => {
     const result = await PostRepository.getById(postId);
 
     if (!result) return;
+
+    if (onlyPublished && result.statusId !== 2) return;
 
     return {
       ...result,

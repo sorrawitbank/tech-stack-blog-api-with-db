@@ -7,13 +7,13 @@ const postRouter = Router();
 postRouter.get(
   "/",
   [PostValidation.validateGetPostsQuery],
-  PostController.getPosts
+  PostController.getPublishedPosts
 );
 
 postRouter.get(
   "/:postId",
   [PostValidation.validatePostId],
-  PostController.getPostById
+  PostController.getPublishedPostById
 );
 
 export default postRouter;

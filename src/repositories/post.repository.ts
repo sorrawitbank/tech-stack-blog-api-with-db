@@ -13,8 +13,6 @@ const PostRepository = {
     const offset = (page - 1) * limit;
     const filters = [];
 
-    filters.push(eq(posts.statusId, 2));
-
     if (keyword) {
       filters.push(
         or(

@@ -12,6 +12,18 @@ const adminRouter = Router();
 
 adminRouter.use(protectAdmin);
 
+adminRouter.get(
+  "/posts",
+  [PostValidation.validateGetPostsQuery],
+  PostController.getPosts
+);
+
+adminRouter.get(
+  "/posts/:postId",
+  [PostValidation.validatePostId],
+  PostController.getPostById
+);
+
 adminRouter.post(
   "/categories",
   [CategoryValidation.validateCategoryBody],
@@ -19,8 +31,12 @@ adminRouter.post(
 );
 
 adminRouter.post(
-  "/post",
-  [PostValidation.validatePostBody],
+  "/posts",
+  [
+    UploadValidation.image.single("image"),
+    UploadValidation.requireFile("image"),
+    PostValidation.validatePostBody,
+  ],
   PostController.createPost
 );
 
@@ -41,7 +57,12 @@ adminRouter.put(
 
 adminRouter.put(
   "/posts/:postId",
-  [PostValidation.validatePostId, PostValidation.validatePostBody],
+  [
+    UploadValidation.image.single("image"),
+    UploadValidation.requireFile("image"),
+    PostValidation.validatePostId,
+    PostValidation.validatePostBody,
+  ],
   PostController.updatePost
 );
 
