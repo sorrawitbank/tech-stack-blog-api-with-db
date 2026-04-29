@@ -75,11 +75,11 @@ const PostService = {
   createPost: async (
     userId: string,
     imageAlt: string | null,
-    categories: string[],
+    categoryIds: number[],
     title: string,
     description: string,
     content: string,
-    status: string,
+    statusId: number,
     file: Express.Multer.File
   ) => {
     const lookup = {
@@ -87,44 +87,33 @@ const PostService = {
       categories: await CategoryRepository.get(),
     };
 
-    if (!lookup.statuses.map((status) => status.name).includes(status)) {
+    const lookupStatusIds = lookup.statuses.map((status) => status.id);
+    if (!lookupStatusIds.includes(statusId)) {
       throw new AppError("Status not found", 404);
     }
 
-    const categoryNames = lookup.categories.map((category) => category.name);
-    for (const category of categories) {
-      if (!categoryNames.includes(category)) {
+    const lookupCategoryIds = lookup.categories.map((category) => category.id);
+    const sortedCategoryIds = categoryIds.sort((a, b) => a - b);
+    for (const categoryId of sortedCategoryIds) {
+      if (!lookupCategoryIds.includes(categoryId)) {
         throw new AppError("Some categories not found", 404);
       }
     }
 
-    const resolvedIds: {
-      status: number;
-      categories: number[];
-    } = {
-      status: 0,
-      categories: [],
-    };
-
-    resolvedIds.status = lookup.statuses.find(
-      (statusLookup) => statusLookup.name === status
-    )!.id;
-    resolvedIds.categories = categories
-      .map(
-        (category) =>
-          lookup.categories.find(
-            (categoryLookup) => categoryLookup.name === category
-          )!.id
-      )
-      .sort((a, b) => a - b);
-
     let filePath: string | undefined;
 
     try {
-      // Upload pet image
+      // Upload image
       const now = new UTCDate();
       const fileExt = file.mimetype.split("/")[1];
-      filePath = `${title.replace(" ", "_")}-${format(
+      const sanitizedTitle = title
+        .trim()
+        .replace(/\s+/g, "_")
+        .replace(/[<>:"/\\|?*\x00-\x1F]/g, "")
+        .replace(/_+/g, "_")
+        .replace(/[._\s]+$/g, "");
+
+      filePath = `${sanitizedTitle}-${format(
         now,
         "yyyyMMddHHmmss"
       )}.${fileExt}`;
@@ -147,11 +136,11 @@ const PostService = {
         userId,
         publicUrl,
         imageAlt,
-        resolvedIds.categories,
+        sortedCategoryIds,
         title,
         description,
         content,
-        resolvedIds.status
+        statusId
       );
     } catch {
       // Rollback
@@ -167,11 +156,11 @@ const PostService = {
     userId: string,
     postId: number,
     imageAlt: string | null,
-    categories: string[],
+    categoryIds: number[],
     title: string,
     description: string,
     content: string,
-    status: string,
+    statusId: number,
     file: Express.Multer.File | undefined
   ) => {
     const lookup = {
@@ -186,36 +175,18 @@ const PostService = {
       throw new AppError("Post not found or not owned by user", 404);
     }
 
-    if (!lookup.statuses.map((status) => status.name).includes(status)) {
+    const lookupStatusIds = lookup.statuses.map((status) => status.id);
+    if (!lookupStatusIds.includes(statusId)) {
       throw new AppError("Status not found", 404);
     }
 
-    const categoryNames = lookup.categories.map((category) => category.name);
-    for (const category of categories) {
-      if (!categoryNames.includes(category)) {
+    const lookupCategoryIds = lookup.categories.map((category) => category.id);
+    const sortedCategoryIds = categoryIds.sort((a, b) => a - b);
+    for (const categoryId of sortedCategoryIds) {
+      if (!lookupCategoryIds.includes(categoryId)) {
         throw new AppError("Some categories not found", 404);
       }
     }
-
-    const resolvedIds: {
-      status: number;
-      categories: number[];
-    } = {
-      status: 0,
-      categories: [],
-    };
-
-    resolvedIds.status = lookup.statuses.find(
-      (statusLookup) => statusLookup.name === status
-    )!.id;
-    resolvedIds.categories = categories
-      .map(
-        (category) =>
-          lookup.categories.find(
-            (categoryLookup) => categoryLookup.name === category
-          )!.id
-      )
-      .sort((a, b) => a - b);
 
     const post = lookup.posts.filter((post) => post.id === postId)[0];
     let filePath: string | undefined;
@@ -223,11 +194,18 @@ const PostService = {
     try {
       let publicUrl: string | undefined;
 
-      // Upload pet image
+      // Upload image
       if (file) {
         const now = new UTCDate();
         const fileExt = file.mimetype.split("/")[1];
-        filePath = `${title.replace(" ", "_")}-${format(
+        const sanitizedTitle = title
+          .trim()
+          .replace(/\s+/g, "_")
+          .replace(/[<>:"/\\|?*\x00-\x1F]/g, "")
+          .replace(/_+/g, "_")
+          .replace(/[._\s]+$/g, "");
+
+        filePath = `${sanitizedTitle}-${format(
           now,
           "yyyyMMddHHmmss"
         )}.${fileExt}`;
@@ -251,11 +229,11 @@ const PostService = {
         postId,
         publicUrl,
         imageAlt,
-        resolvedIds.categories,
+        sortedCategoryIds,
         title,
         description,
         content,
-        resolvedIds.status
+        statusId
       );
 
       if (publicUrl) {

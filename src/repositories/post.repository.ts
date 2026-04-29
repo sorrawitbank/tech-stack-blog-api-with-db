@@ -1,4 +1,4 @@
-import { and, count, desc, eq, exists, ilike, or } from "drizzle-orm";
+import { and, asc, count, desc, eq, exists, ilike, or } from "drizzle-orm";
 import db from "../db/db";
 import { categories, comments, postCategories, posts } from "../db/schema";
 
@@ -52,6 +52,7 @@ const PostRepository = {
           with: {
             category: true,
           },
+          orderBy: [asc(postCategories.categoryId)],
         },
       },
       where: and(...filters),
@@ -86,6 +87,7 @@ const PostRepository = {
           with: {
             category: true,
           },
+          orderBy: [asc(postCategories.categoryId)],
         },
       },
       where: (posts) => eq(posts.id, postId),
@@ -108,6 +110,7 @@ const PostRepository = {
           with: {
             category: true,
           },
+          orderBy: [asc(postCategories.categoryId)],
         },
       },
       where: (posts) => eq(posts.userId, userId),

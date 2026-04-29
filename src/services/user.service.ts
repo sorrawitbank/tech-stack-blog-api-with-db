@@ -33,7 +33,7 @@ const UserService = {
     try {
       let publicUrl: string | undefined;
 
-      // Upload pet image
+      // Upload image
       if (file) {
         const now = new UTCDate();
         const fileExt = file.mimetype.split("/")[1];
