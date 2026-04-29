@@ -33,23 +33,25 @@ const CategoryValidation = {
 
     // Check for required fields
     if (!name) {
-      return res.status(400).json({ message: "Name is required" });
+      return res.status(400).json({ message: "Category name is required" });
     }
 
     // Type validations
     if (typeof name !== "string") {
-      return res.status(400).json({ message: "Name must be a string" });
+      return res.status(400).json({
+        message: "Category name must be a string",
+      });
     }
 
     if (name.trim().length < 2) {
       return res.status(400).json({
-        message: "Name must be at least 2 characters long",
+        message: "Category name must be at least 2 characters long",
       });
     }
 
     if (name.trim().length > 20) {
       return res.status(400).json({
-        message: "Name must be less than 20 characters long",
+        message: "Category name must be less than 20 characters long",
       });
     }
 

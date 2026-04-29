@@ -37,15 +37,15 @@ const AuthValidation = {
       return res.status(400).json({ message: "Name must be a string" });
     }
 
-    if (name.trim().length < 2) {
+    if (name.trim().length < 4) {
       return res.status(400).json({
-        message: "Name must be at least 2 characters long",
+        message: "Name must be at least 4 characters long",
       });
     }
 
-    if (name.trim().length > 50) {
+    if (name.trim().length > 64) {
       return res.status(400).json({
-        message: "Name must be less than 50 characters long",
+        message: "Name must be less than 64 characters long",
       });
     }
 
@@ -59,9 +59,9 @@ const AuthValidation = {
       });
     }
 
-    if (username.trim().length > 50) {
+    if (username.trim().length > 16) {
       return res.status(400).json({
-        message: "Username must be less than 50 characters long",
+        message: "Username must be less than 16 characters long",
       });
     }
 
@@ -71,6 +71,18 @@ const AuthValidation = {
 
     if (typeof password !== "string") {
       return res.status(400).json({ message: "Password must be a string" });
+    }
+
+    if (password.trim().length < 8) {
+      return res.status(400).json({
+        message: "Password must be at least 8 characters long",
+      });
+    }
+
+    if (password.trim().length > 32) {
+      return res.status(400).json({
+        message: "Password must be less than 32 characters long",
+      });
     }
 
     next();
@@ -105,6 +117,18 @@ const AuthValidation = {
       return res.status(400).json({ message: "Password must be a string" });
     }
 
+    if (password.trim().length < 8) {
+      return res.status(400).json({
+        message: "Password must be at least 8 characters long",
+      });
+    }
+
+    if (password.trim().length > 32) {
+      return res.status(400).json({
+        message: "Password must be less than 32 characters long",
+      });
+    }
+
     next();
   },
 
@@ -133,8 +157,32 @@ const AuthValidation = {
       return res.status(400).json({ message: "Old password must be a string" });
     }
 
+    if (oldPassword.trim().length < 8) {
+      return res.status(400).json({
+        message: "Old password must be at least 8 characters long",
+      });
+    }
+
+    if (oldPassword.trim().length > 32) {
+      return res.status(400).json({
+        message: "Old password must be less than 32 characters long",
+      });
+    }
+
     if (typeof newPassword !== "string") {
       return res.status(400).json({ message: "New password must be a string" });
+    }
+
+    if (newPassword.trim().length < 8) {
+      return res.status(400).json({
+        message: "New password must be at least 8 characters long",
+      });
+    }
+
+    if (newPassword.trim().length > 32) {
+      return res.status(400).json({
+        message: "New password must be less than 32 characters long",
+      });
     }
 
     next();

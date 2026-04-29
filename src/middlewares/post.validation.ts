@@ -22,7 +22,7 @@ const PostValidation = {
   },
 
   validatePostBody: (
-    req: Request<{}, {}, { body: string }>, //Partial<PostBody>>,
+    req: Request<{}, {}, { body: string }>,
     res: Response,
     next: NextFunction
   ) => {
@@ -38,15 +38,16 @@ const PostValidation = {
       return res.status(400).json({ message: "Invalid JSON body" });
     }
 
-    const { imageAlt, categories, title, description, content, status } = body;
+    const { imageAlt, categoryIds, title, description, content, statusId } =
+      body;
 
     // Check for required fields
-    if (!categories) {
-      return res.status(400).json({ message: "Categories are required" });
+    if (!categoryIds) {
+      return res.status(400).json({ message: "Category IDs are required" });
     }
 
     if (!title) {
-      return res.status(400).json({ message: "Title is required" });
+      return res.status(400).json({ message: " " });
     }
 
     if (!description) {
@@ -57,7 +58,7 @@ const PostValidation = {
       return res.status(400).json({ message: "Content is required" });
     }
 
-    if (!status) {
+    if (!statusId) {
       return res.status(400).json({ message: "Status is required" });
     }
 
@@ -69,6 +70,12 @@ const PostValidation = {
         });
       }
 
+      if (imageAlt.trim().length < 4) {
+        return res.status(400).json({
+          message: "Image alternative text must be at least 4 characters long",
+        });
+      }
+
       if (imageAlt.trim().length > 40) {
         return res.status(400).json({
           message:
@@ -77,20 +84,32 @@ const PostValidation = {
       }
     }
 
-    if (!Array.isArray(categories)) {
-      return res.status(400).json({ message: "Categories must be an array" });
+    if (!Array.isArray(categoryIds)) {
+      return res.status(400).json({ message: "Category IDs must be an array" });
     }
 
-    for (const category of categories) {
-      if (typeof category !== "string") {
+    if (categoryIds.length > 3) {
+      return res.status(400).json({
+        message: "Category IDs must be an array of up to 3 numbers",
+      });
+    }
+
+    for (const categoryId of categoryIds) {
+      if (typeof categoryId !== "number") {
         return res.status(400).json({
-          message: "Categories must be an array of strings",
+          message: "Category IDs must be an array of numbers",
         });
       }
     }
 
     if (typeof title !== "string") {
       return res.status(400).json({ message: "Title must be a string" });
+    }
+
+    if (title.trim().length < 10) {
+      return res.status(400).json({
+        message: "Title must be at least 10 characters long",
+      });
     }
 
     if (title.trim().length > 80) {
@@ -105,9 +124,15 @@ const PostValidation = {
       });
     }
 
-    if (description.trim().length > 120) {
+    if (description.trim().length < 20) {
       return res.status(400).json({
-        message: "Description must be less than 120 characters long",
+        message: "Description must be at least 20 characters long",
+      });
+    }
+
+    if (description.trim().length > 400) {
+      return res.status(400).json({
+        message: "Description must be less than 400 characters long",
       });
     }
 
@@ -115,8 +140,19 @@ const PostValidation = {
       return res.status(400).json({ message: "Content must be a string" });
     }
 
-    if (typeof status !== "string") {
-      return res.status(400).json({ message: "Status must be a string" });
+    if (content.trim().length < 40) {
+      return res.status(400).json({
+        message: "Content must be at least 40 characters long",
+      });
+    }
+
+    if (
+      typeof statusId !== "number" &&
+      !(Number.isInteger(statusId) && statusId > 0)
+    ) {
+      return res.status(400).json({
+        message: "Status ID must be a positive integer",
+      });
     }
 
     next();
@@ -129,26 +165,33 @@ const PostValidation = {
   ) => {
     const { page, limit, statusId } = req.query;
     const parsedPage = Number(page);
-    const parsedlimit = Number(limit);
-    const parsedstatusId = Number(statusId);
+    const parsedLimit = Number(limit);
+    const parsedStatusId = Number(statusId);
 
     if (
-      (typeof page !== "undefined" &&
-        !(Number.isInteger(parsedPage) && parsedPage > 0)) ||
-      (typeof limit !== "undefined" &&
-        !(Number.isInteger(parsedlimit) && parsedlimit > 0))
+      page !== undefined &&
+      !(Number.isInteger(parsedPage) && parsedPage > 0)
     ) {
       return res.status(400).json({
-        message: "Page and limit must be positive integers",
+        message: "Page must be positive integer",
       });
     }
 
     if (
-      typeof statusId !== "undefined" &&
-      !(Number.isInteger(parsedstatusId) && parsedstatusId > 0)
+      limit !== undefined &&
+      !(Number.isInteger(parsedLimit) && parsedLimit > 0)
     ) {
       return res.status(400).json({
-        message: "status ID must be a positive integer",
+        message: "Limit must be positive integer",
+      });
+    }
+
+    if (
+      statusId !== undefined &&
+      !(Number.isInteger(parsedStatusId) && parsedStatusId > 0)
+    ) {
+      return res.status(400).json({
+        message: "Status ID must be a positive integer",
       });
     }
 

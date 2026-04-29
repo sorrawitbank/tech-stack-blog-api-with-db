@@ -3,7 +3,7 @@ import type { AdminUserBody, UserBody } from "../types/body";
 
 const UserValidation = {
   validateUserBody: (
-    req: Request<{}, {}, { body: string }>, //Partial<PostBody>>,
+    req: Request<{}, {}, { body: string }>,
     res: Response,
     next: NextFunction
   ) => {
@@ -35,15 +35,15 @@ const UserValidation = {
       return res.status(400).json({ message: "Name must be a string" });
     }
 
-    if (name.trim().length < 2) {
+    if (name.trim().length < 4) {
       return res.status(400).json({
-        message: "Name must be at least 2 characters long",
+        message: "Name must be at least 4 characters long",
       });
     }
 
-    if (name.trim().length > 50) {
+    if (name.trim().length > 64) {
       return res.status(400).json({
-        message: "Name must be less than 50 characters long",
+        message: "Name must be less than 64 characters long",
       });
     }
 
@@ -57,9 +57,9 @@ const UserValidation = {
       });
     }
 
-    if (username.trim().length > 50) {
+    if (username.trim().length > 16) {
       return res.status(400).json({
-        message: "Username must be less than 50 characters long",
+        message: "Username must be less than 16 characters long",
       });
     }
 
@@ -67,7 +67,7 @@ const UserValidation = {
   },
 
   validateAdminBody: (
-    req: Request<{}, {}, { body: string }>, //Partial<PostBody>>,
+    req: Request<{}, {}, { body: string }>,
     res: Response,
     next: NextFunction
   ) => {
@@ -99,15 +99,15 @@ const UserValidation = {
       return res.status(400).json({ message: "Name must be a string" });
     }
 
-    if (name.trim().length < 2) {
+    if (name.trim().length < 4) {
       return res.status(400).json({
-        message: "Name must be at least 2 characters long",
+        message: "Name must be at least 4 characters long",
       });
     }
 
-    if (name.trim().length > 50) {
+    if (name.trim().length > 64) {
       return res.status(400).json({
-        message: "Name must be less than 50 characters long",
+        message: "Name must be less than 64 characters long",
       });
     }
 
@@ -121,22 +121,26 @@ const UserValidation = {
       });
     }
 
-    if (username.trim().length > 50) {
+    if (username.trim().length > 16) {
       return res.status(400).json({
-        message: "Username must be less than 50 characters long",
+        message: "Username must be less than 16 characters long",
       });
     }
 
-    if (bio !== undefined) {
-      if (typeof bio !== "string") {
-        return res.status(400).json({ message: "Bio must be a string" });
-      }
+    if (typeof bio !== "string") {
+      return res.status(400).json({ message: "Bio must be a string" });
+    }
 
-      if (bio.trim().length > 400) {
-        return res.status(400).json({
-          message: "Bio must be less than 400 characters long",
-        });
-      }
+    if (bio.trim().length < 20) {
+      return res.status(400).json({
+        message: "Bio must be at least 20 characters long",
+      });
+    }
+
+    if (bio.trim().length > 400) {
+      return res.status(400).json({
+        message: "Bio must be less than 400 characters long",
+      });
     }
 
     next();
