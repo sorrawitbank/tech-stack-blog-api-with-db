@@ -59,7 +59,6 @@ adminRouter.put(
   "/posts/:postId",
   [
     UploadValidation.image.single("image"),
-    UploadValidation.requireFile("image"),
     PostValidation.validatePostId,
     PostValidation.validatePostBody,
   ],

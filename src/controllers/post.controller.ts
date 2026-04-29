@@ -117,6 +117,7 @@ const PostController = {
 
     const postResponse = {
       id: result.id,
+      author: result.author,
       image: result.image,
       imageAlt: result.imageAlt,
       categories: result.categories,
@@ -174,7 +175,8 @@ const PostController = {
     }
 
     const body: PostBody = JSON.parse(req.body.body);
-    const { imageAlt, categories, title, description, content, status } = body;
+    const { imageAlt, categoryIds, title, description, content, statusId } =
+      body;
     const file = req.file!;
 
     try {
@@ -183,11 +185,11 @@ const PostController = {
       await PostService.createPost(
         user.data.user.id,
         imageAlt ? imageAlt.trim() : null,
-        [...new Set(categories.map((category) => category.trim()))],
+        [...new Set(categoryIds)],
         title.trim(),
         description.trim(),
         content.trim(),
-        status.trim(),
+        statusId,
         file
       );
     } catch (error) {
@@ -216,7 +218,8 @@ const PostController = {
 
     const postId = Number(req.params.postId);
     const body: PostBody = JSON.parse(req.body.body);
-    const { imageAlt, categories, title, description, content, status } = body;
+    const { imageAlt, categoryIds, title, description, content, statusId } =
+      body;
     const file = req.file;
     let result;
 
@@ -227,11 +230,11 @@ const PostController = {
         user.data.user.id,
         postId,
         imageAlt ? imageAlt.trim() : null,
-        [...new Set(categories.map((category) => category.trim()))],
+        [...new Set(categoryIds)],
         title.trim(),
         description.trim(),
         content.trim(),
-        status.trim(),
+        statusId,
         file
       );
     } catch (error) {
