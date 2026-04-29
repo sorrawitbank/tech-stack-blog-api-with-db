@@ -8,7 +8,7 @@ const AuthController = {
     const { name, username, email, password } = req.body;
 
     try {
-      await AuthService.register(name, username, email, password);
+      await AuthService.register(name.trim(), username.trim(), email, password);
     } catch (error) {
       // Client error from service
       if (error instanceof AppError) {
