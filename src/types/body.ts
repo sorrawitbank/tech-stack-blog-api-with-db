@@ -1,18 +1,15 @@
-export interface UserIdBody {
-  userId: string;
+export interface CategoryBody {
+  name: string;
 }
 
 export interface PostBody {
-  image: string;
   imageAlt?: string;
-  categories: string[];
+  categoryIds: number[];
   title: string;
   description: string;
   content: string;
-  status: string;
+  statusId: number;
 }
-
-export type CreatePostBody = UserIdBody & PostBody;
 
 export interface LoginBody {
   email: string;
@@ -27,4 +24,13 @@ export interface RegisterBody extends LoginBody {
 export interface ResetPasswordBody {
   oldPassword: string;
   newPassword: string;
+}
+
+export interface UserBody {
+  name: string;
+  username: string;
+}
+
+export interface AdminUserBody extends UserBody {
+  bio: string;
 }

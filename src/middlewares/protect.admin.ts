@@ -1,8 +1,15 @@
 import type { NextFunction, Request, Response } from "express";
-import UserRepository from "../repositories/userRepository";
-import supabase from "../supabase/client";
+import type { User } from "@supabase/supabase-js";
+import UserRepository from "../repositories/user.repository";
+import supabaseClient from "../supabase/client";
 
-async function protectAdmin(req: Request, res: Response, next: NextFunction) {
+type RequestWithUser = Request & { user?: User };
+
+async function protectAdmin(
+  req: RequestWithUser,
+  res: Response,
+  next: NextFunction
+) {
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
@@ -10,7 +17,7 @@ async function protectAdmin(req: Request, res: Response, next: NextFunction) {
   }
 
   try {
-    const { data, error: authError } = await supabase.auth.getUser(token);
+    const { data, error: authError } = await supabaseClient.auth.getUser(token);
 
     if (authError || !data.user) {
       return res.status(401).json({ message: "Unauthorized: Invalid token" });

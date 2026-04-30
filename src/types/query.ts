@@ -3,4 +3,5 @@ export interface GetPostsQuery {
   limit?: string;
   category?: string;
   keyword?: string;
+  statusId?: string;
 }

@@ -1,6 +1,6 @@
 import AppError from "../errors/AppError";
-import UserRepository from "../repositories/userRepository";
-import supabase from "../supabase/client";
+import UserRepository from "../repositories/user.repository";
+import supabaseClient from "../supabase/client";
 
 const AuthService = {
   register: async (
@@ -17,7 +17,7 @@ const AuthService = {
       throw new AppError("This username is already taken", 400);
     }
 
-    const { data, error: authError } = await supabase.auth.signUp({
+    const { data, error: authError } = await supabaseClient.auth.signUp({
       email,
       password,
     });
@@ -33,10 +33,11 @@ const AuthService = {
   },
 
   login: async (email: string, password: string) => {
-    const { data, error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data, error: authError } =
+      await supabaseClient.auth.signInWithPassword({
+        email,
+        password,
+      });
 
     if (authError) {
       if (
@@ -56,7 +57,7 @@ const AuthService = {
   },
 
   getUser: async (token: string) => {
-    const { data, error: authError } = await supabase.auth.getUser(token);
+    const { data, error: authError } = await supabaseClient.auth.getUser(token);
 
     if (authError) {
       throw new AppError("Unauthorized or token expired", 401);
@@ -70,13 +71,13 @@ const AuthService = {
     oldPassword: string,
     newPassword: string
   ) => {
-    const { data, error: authError } = await supabase.auth.getUser(token);
+    const { data, error: authError } = await supabaseClient.auth.getUser(token);
 
     if (authError) {
       throw new AppError("Unauthorized or token expired", 401);
     }
 
-    const { error: loginError } = await supabase.auth.signInWithPassword({
+    const { error: loginError } = await supabaseClient.auth.signInWithPassword({
       email: data.user.email!,
       password: oldPassword,
     });
@@ -85,7 +86,7 @@ const AuthService = {
       throw new AppError("Invalid old password", 400);
     }
 
-    const { error: passwordError } = await supabase.auth.updateUser({
+    const { error: passwordError } = await supabaseClient.auth.updateUser({
       password: newPassword,
     });
 

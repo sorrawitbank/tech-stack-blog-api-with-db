@@ -1,7 +1,10 @@
-import express from "express";
 import cors from "cors";
-import authRoute from "./routes/authRoute";
-import postRouter from "./routes/postRoute";
+import express, { NextFunction, Request, Response } from "express";
+import adminRouter from "./routes/admin.route";
+import authRoute from "./routes/auth.route";
+import categoryRoute from "./routes/category.routes";
+import postRouter from "./routes/post.route";
+import userRouter from "./routes/user.route";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -22,8 +25,22 @@ app.get("/", (req, res) => {
   return res.status(200).json("Tech Stack Blog API with Database");
 });
 
-app.use("/posts", postRouter);
+app.use("/admin", adminRouter);
 app.use("/auth", authRoute);
+app.use("/categories", categoryRoute);
+app.use("/posts", postRouter);
+app.use("/user", userRouter);
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  if (err) {
+    const status = err.status || 500;
+    return res.status(status).json({
+      message: err.message || "Something went wrong",
+    });
+  }
+
+  next();
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

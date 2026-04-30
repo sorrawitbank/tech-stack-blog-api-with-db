@@ -1,14 +1,14 @@
 import type { Request, Response } from "express";
 import type { LoginBody, RegisterBody, ResetPasswordBody } from "../types/body";
 import AppError from "../errors/AppError";
-import AuthService from "../services/authService";
+import AuthService from "../services/auth.service";
 
 const AuthController = {
   register: async (req: Request<{}, {}, RegisterBody>, res: Response) => {
     const { name, username, email, password } = req.body;
 
     try {
-      await AuthService.register(name, username, email, password);
+      await AuthService.register(name.trim(), username.trim(), email, password);
     } catch (error) {
       // Client error from service
       if (error instanceof AppError) {
@@ -70,6 +70,7 @@ const AuthController = {
       email: result.data.user.email!,
       username: result.user.username,
       name: result.user.name,
+      bio: result.user.bio,
       profilePic: result.user.profilePic,
       role: result.user.role,
     };

@@ -1,4 +1,4 @@
-import { and, count, desc, eq, exists, ilike, or } from "drizzle-orm";
+import { and, asc, count, desc, eq, exists, ilike, or } from "drizzle-orm";
 import db from "../db/db";
 import { categories, comments, postCategories, posts } from "../db/schema";
 
@@ -7,12 +7,11 @@ const PostRepository = {
     page: number,
     limit: number,
     category: string | null,
-    keyword: string | null
+    keyword: string | null,
+    statusId: number | null
   ) => {
     const offset = (page - 1) * limit;
     const filters = [];
-
-    filters.push(eq(posts.statusId, 2));
 
     if (keyword) {
       filters.push(
@@ -34,11 +33,15 @@ const PostRepository = {
             .where(
               and(
                 eq(postCategories.postId, posts.id),
-                ilike(categories.name, `%${category}%`)
+                eq(categories.name, category)
               )
             )
         )
       );
+    }
+
+    if (statusId) {
+      filters.push(eq(posts.statusId, statusId));
     }
 
     const result = await db.query.posts.findMany({
@@ -49,6 +52,7 @@ const PostRepository = {
           with: {
             category: true,
           },
+          orderBy: [asc(postCategories.categoryId)],
         },
       },
       where: and(...filters),
@@ -68,7 +72,7 @@ const PostRepository = {
   },
 
   getById: async (postId: number) => {
-    return await db.query.posts.findFirst({
+    return db.query.posts.findFirst({
       with: {
         user: true,
         status: true,
@@ -83,9 +87,33 @@ const PostRepository = {
           with: {
             category: true,
           },
+          orderBy: [asc(postCategories.categoryId)],
         },
       },
       where: (posts) => eq(posts.id, postId),
+    });
+  },
+
+  getByUserId: async (userId: string) => {
+    return db.query.posts.findMany({
+      with: {
+        user: true,
+        status: true,
+        likes: true,
+        comments: {
+          with: {
+            user: true,
+          },
+          orderBy: [desc(comments.createdAt)],
+        },
+        postCategories: {
+          with: {
+            category: true,
+          },
+          orderBy: [asc(postCategories.categoryId)],
+        },
+      },
+      where: (posts) => eq(posts.userId, userId),
     });
   },
 
@@ -124,7 +152,7 @@ const PostRepository = {
 
   update: async (
     postId: number,
-    image: string,
+    image: string | undefined,
     imageAlt: string | null,
     categoryIds: number[],
     title: string,
@@ -132,7 +160,7 @@ const PostRepository = {
     content: string,
     statusId: number
   ) => {
-    return await db.transaction(async (tx) => {
+    return db.transaction(async (tx) => {
       const result = await tx
         .update(posts)
         .set({
@@ -163,7 +191,7 @@ const PostRepository = {
   },
 
   delete: async (postId: number) => {
-    return await db.delete(posts).where(eq(posts.id, postId));
+    return db.delete(posts).where(eq(posts.id, postId));
   },
 };
 
