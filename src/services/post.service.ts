@@ -5,6 +5,7 @@ import CategoryRepository from "../repositories/category.repository";
 import PostRepository from "../repositories/post.repository";
 import StatusRepository from "../repositories/status.repository";
 import supabaseClient from "../supabase/client";
+import sanitizeFilename from "../utils/sanitizeFilename";
 
 const bucket = "post-assets";
 
@@ -105,12 +106,7 @@ const PostService = {
       // Upload image
       const now = new UTCDate();
       const fileExt = file.mimetype.split("/")[1];
-      const sanitizedTitle = title
-        .trim()
-        .replace(/\s+/g, "_")
-        .replace(/[<>:"/\\|?*\x00-\x1F]/g, "")
-        .replace(/_+/g, "_")
-        .replace(/[._\s]+$/g, "");
+      const sanitizedTitle = sanitizeFilename(title);
 
       filePath = `${sanitizedTitle}-${format(
         now,
@@ -197,12 +193,7 @@ const PostService = {
       if (file) {
         const now = new UTCDate();
         const fileExt = file.mimetype.split("/")[1];
-        const sanitizedTitle = title
-          .trim()
-          .replace(/\s+/g, "_")
-          .replace(/[<>:"/\\|?*\x00-\x1F]/g, "")
-          .replace(/_+/g, "_")
-          .replace(/[._\s]+$/g, "");
+        const sanitizedTitle = sanitizeFilename(title);
 
         filePath = `${sanitizedTitle}-${format(
           now,
