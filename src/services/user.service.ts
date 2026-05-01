@@ -2,7 +2,6 @@ import { format } from "date-fns";
 import { UTCDate } from "@date-fns/utc";
 import AppError from "../errors/AppError";
 import UserRepository from "../repositories/user.repository";
-import supabaseAdmin from "../supabase/admin";
 import supabaseClient from "../supabase/client";
 
 const bucket = "user-assets";
@@ -63,7 +62,7 @@ const UserService = {
       );
 
       if (publicUrl && user.profilePic) {
-        await supabaseAdmin.storage
+        await supabaseClient.storage
           .from(bucket)
           .remove([user.profilePic.split(`/${bucket}/`)[1]]);
       }
@@ -72,7 +71,7 @@ const UserService = {
     } catch (error) {
       // Rollback
       if (filePath) {
-        await supabaseAdmin.storage.from(bucket).remove([filePath]);
+        await supabaseClient.storage.from(bucket).remove([filePath]);
       }
 
       throw new AppError("Failed to update user", 500);

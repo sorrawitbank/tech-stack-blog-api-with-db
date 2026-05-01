@@ -4,7 +4,6 @@ import AppError from "../errors/AppError";
 import CategoryRepository from "../repositories/category.repository";
 import PostRepository from "../repositories/post.repository";
 import StatusRepository from "../repositories/status.repository";
-import supabaseAdmin from "../supabase/admin";
 import supabaseClient from "../supabase/client";
 
 const bucket = "post-assets";
@@ -145,7 +144,7 @@ const PostService = {
     } catch {
       // Rollback
       if (filePath) {
-        await supabaseAdmin.storage.from(bucket).remove([filePath]);
+        await supabaseClient.storage.from(bucket).remove([filePath]);
       }
 
       throw new AppError("Failed to create post", 500);
@@ -237,7 +236,7 @@ const PostService = {
       );
 
       if (publicUrl) {
-        await supabaseAdmin.storage
+        await supabaseClient.storage
           .from(bucket)
           .remove([post.image.split(`/${bucket}/`)[1]]);
       }
@@ -246,7 +245,7 @@ const PostService = {
     } catch {
       // Rollback
       if (filePath) {
-        await supabaseAdmin.storage.from(bucket).remove([filePath]);
+        await supabaseClient.storage.from(bucket).remove([filePath]);
       }
 
       throw new AppError("Failed to create post", 500);
