@@ -1,6 +1,12 @@
 import { and, asc, count, desc, eq, exists, ilike, or } from "drizzle-orm";
 import db from "../db/db";
-import { categories, comments, postCategories, posts } from "../db/schema";
+import {
+  categories,
+  comments,
+  likes,
+  postCategories,
+  posts,
+} from "../db/schema";
 
 const PostRepository = {
   get: async (
@@ -188,6 +194,16 @@ const PostRepository = {
 
       return result;
     });
+  },
+
+  like: async (postId: number, userId: string) => {
+    await db.insert(likes).values({ postId, userId });
+  },
+
+  unlike: async (postId: number, userId: string) => {
+    return db
+      .delete(likes)
+      .where(and(eq(likes.postId, postId), eq(likes.userId, userId)));
   },
 
   delete: async (postId: number) => {

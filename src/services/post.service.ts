@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import { UTCDate } from "@date-fns/utc";
 import AppError from "../errors/AppError";
 import CategoryRepository from "../repositories/category.repository";
+import LikeRepository from "../repositories/like.repository";
 import PostRepository from "../repositories/post.repository";
 import StatusRepository from "../repositories/status.repository";
 import supabaseClient from "../supabase/client";
@@ -241,6 +242,35 @@ const PostService = {
 
       throw new AppError("Failed to create post", 500);
     }
+  },
+
+  likePost: async (postId: number, userId: string) => {
+    const lookup = {
+      post: await PostRepository.getById(postId),
+      like: (await LikeRepository.getByPostIdAndUserId(postId, userId))[0],
+    };
+
+    if (!lookup.post) {
+      throw new AppError("Post not found", 404);
+    }
+
+    if (lookup.like) {
+      throw new AppError("This user already liked this post", 400);
+    }
+
+    await PostRepository.like(postId, userId);
+  },
+
+  unlikePost: async (postId: number, userId: string) => {
+    const lookup = {
+      post: await PostRepository.getById(postId),
+    };
+
+    if (!lookup.post) {
+      throw new AppError("Post not found", 404);
+    }
+
+    return PostRepository.unlike(postId, userId);
   },
 
   deletePost: async (postId: number) => {
