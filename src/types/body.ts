@@ -11,6 +11,10 @@ export interface PostBody {
   statusId: number;
 }
 
+export interface CommentBody {
+  comment: string;
+}
+
 export interface LoginBody {
   email: string;
   password: string;
