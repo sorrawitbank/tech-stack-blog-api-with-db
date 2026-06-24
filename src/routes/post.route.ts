@@ -19,6 +19,12 @@ postRouter.get(
   PostController.getPublishedPostById
 );
 
+postRouter.get(
+  "/:postId/like",
+  [PostValidation.validatePostId, protectUser],
+  PostController.getPostLikeByUserId
+);
+
 postRouter.put(
   "/:postId/comment",
   [

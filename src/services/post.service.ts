@@ -73,6 +73,20 @@ const PostService = {
     };
   },
 
+  getPostLikeByUserId: async (postId: number, userId: string) => {
+    const lookup = {
+      post: await PostRepository.getById(postId),
+    };
+
+    if (!lookup.post) {
+      throw new AppError("Post not found", 404);
+    }
+
+    const result = await LikeRepository.getByPostIdAndUserId(postId, userId);
+
+    return Boolean(result[0]);
+  },
+
   createPost: async (
     userId: string,
     imageAlt: string | null,
