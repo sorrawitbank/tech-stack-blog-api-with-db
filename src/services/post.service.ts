@@ -272,7 +272,7 @@ const PostService = {
       throw new AppError("This user already liked this post", 400);
     }
 
-    await PostRepository.like(postId, userId);
+    await LikeRepository.like(postId, userId);
   },
 
   unlikePost: async (postId: number, userId: string) => {
@@ -284,7 +284,7 @@ const PostService = {
       throw new AppError("Post not found", 404);
     }
 
-    return PostRepository.unlike(postId, userId);
+    return LikeRepository.unlike(postId, userId);
   },
 
   deletePost: async (postId: number) => {
