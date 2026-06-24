@@ -2,9 +2,11 @@ import { format } from "date-fns";
 import { UTCDate } from "@date-fns/utc";
 import AppError from "../errors/AppError";
 import CategoryRepository from "../repositories/category.repository";
+import LikeRepository from "../repositories/like.repository";
 import PostRepository from "../repositories/post.repository";
 import StatusRepository from "../repositories/status.repository";
 import supabaseClient from "../supabase/client";
+import sanitizeFilename from "../utils/sanitizeFilename";
 
 const bucket = "post-assets";
 
@@ -71,6 +73,20 @@ const PostService = {
     };
   },
 
+  getPostLikeByUserId: async (postId: number, userId: string) => {
+    const lookup = {
+      post: await PostRepository.getById(postId),
+    };
+
+    if (!lookup.post) {
+      throw new AppError("Post not found", 404);
+    }
+
+    const result = await LikeRepository.getByPostIdAndUserId(postId, userId);
+
+    return Boolean(result[0]);
+  },
+
   createPost: async (
     userId: string,
     imageAlt: string | null,
@@ -105,12 +121,7 @@ const PostService = {
       // Upload image
       const now = new UTCDate();
       const fileExt = file.mimetype.split("/")[1];
-      const sanitizedTitle = title
-        .trim()
-        .replace(/\s+/g, "_")
-        .replace(/[<>:"/\\|?*\x00-\x1F]/g, "")
-        .replace(/_+/g, "_")
-        .replace(/[._\s]+$/g, "");
+      const sanitizedTitle = sanitizeFilename(title);
 
       filePath = `${sanitizedTitle}-${format(
         now,
@@ -197,12 +208,7 @@ const PostService = {
       if (file) {
         const now = new UTCDate();
         const fileExt = file.mimetype.split("/")[1];
-        const sanitizedTitle = title
-          .trim()
-          .replace(/\s+/g, "_")
-          .replace(/[<>:"/\\|?*\x00-\x1F]/g, "")
-          .replace(/_+/g, "_")
-          .replace(/[._\s]+$/g, "");
+        const sanitizedTitle = sanitizeFilename(title);
 
         filePath = `${sanitizedTitle}-${format(
           now,
@@ -250,6 +256,35 @@ const PostService = {
 
       throw new AppError("Failed to create post", 500);
     }
+  },
+
+  likePost: async (postId: number, userId: string) => {
+    const lookup = {
+      post: await PostRepository.getById(postId),
+      like: (await LikeRepository.getByPostIdAndUserId(postId, userId))[0],
+    };
+
+    if (!lookup.post) {
+      throw new AppError("Post not found", 404);
+    }
+
+    if (lookup.like) {
+      throw new AppError("This user already liked this post", 400);
+    }
+
+    await LikeRepository.like(postId, userId);
+  },
+
+  unlikePost: async (postId: number, userId: string) => {
+    const lookup = {
+      post: await PostRepository.getById(postId),
+    };
+
+    if (!lookup.post) {
+      throw new AppError("Post not found", 404);
+    }
+
+    return LikeRepository.unlike(postId, userId);
   },
 
   deletePost: async (postId: number) => {

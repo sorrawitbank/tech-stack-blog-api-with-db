@@ -15,7 +15,7 @@ const CategoryService = {
       throw new AppError("Category already exists", 400);
     }
 
-    return CategoryRepository.create(name);
+    await CategoryRepository.create(name);
   },
 
   updateCategory: async (categoryId: number, name: string) => {

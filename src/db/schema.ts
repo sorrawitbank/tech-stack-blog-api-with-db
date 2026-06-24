@@ -12,6 +12,7 @@ import {
   primaryKey,
   pgEnum,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 export const role = pgEnum("role", ["user", "admin"]);
 
@@ -35,15 +36,6 @@ export const categories = pgTable(
     name: text().notNull(),
   },
   (table) => [unique("categories_name_key").on(table.name)]
-);
-
-export const statuses = pgTable(
-  "statuses",
-  {
-    id: serial().primaryKey().notNull(),
-    name: text().notNull(),
-  },
-  (table) => [unique("statuses_name_key").on(table.name)]
 );
 
 export const posts = pgTable(
@@ -82,6 +74,15 @@ export const posts = pgTable(
   ]
 );
 
+export const statuses = pgTable(
+  "statuses",
+  {
+    id: serial().primaryKey().notNull(),
+    name: text().notNull(),
+  },
+  (table) => [unique("statuses_name_key").on(table.name)]
+);
+
 export const comments = pgTable(
   "comments",
   {
@@ -108,35 +109,6 @@ export const comments = pgTable(
       foreignColumns: [users.id],
       name: "comments_user_id_fkey",
     }).onDelete("cascade"),
-  ]
-);
-
-export const likes = pgTable(
-  "likes",
-  {
-    id: serial().primaryKey().notNull(),
-    postId: integer("post_id").notNull(),
-    userId: uuid("user_id").notNull(),
-    likedAt: timestamp("liked_at", { withTimezone: true, mode: "string" })
-      .defaultNow()
-      .notNull(),
-  },
-  (table) => [
-    index("likes_post_id_idx").using(
-      "btree",
-      table.postId.asc().nullsLast().op("int4_ops")
-    ),
-    foreignKey({
-      columns: [table.postId],
-      foreignColumns: [posts.id],
-      name: "likes_post_id_fkey",
-    }).onDelete("cascade"),
-    foreignKey({
-      columns: [table.userId],
-      foreignColumns: [users.id],
-      name: "likes_user_id_fkey",
-    }).onDelete("cascade"),
-    unique("likes_post_id_user_id_key").on(table.postId, table.userId),
   ]
 );
 
@@ -169,5 +141,37 @@ export const postCategories = pgTable(
       columns: [table.postId, table.categoryId],
       name: "post_categories_pkey",
     }),
+  ]
+);
+
+export const likes = pgTable(
+  "likes",
+  {
+    postId: integer("post_id").notNull(),
+    userId: uuid("user_id").notNull(),
+    likedAt: timestamp("liked_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("likes_post_id_idx").using(
+      "btree",
+      table.postId.asc().nullsLast().op("int4_ops")
+    ),
+    index("likes_user_id_idx").using(
+      "btree",
+      table.userId.asc().nullsLast().op("uuid_ops")
+    ),
+    foreignKey({
+      columns: [table.postId],
+      foreignColumns: [posts.id],
+      name: "likes_post_id_fkey",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [table.userId],
+      foreignColumns: [users.id],
+      name: "likes_user_id_fkey",
+    }).onDelete("cascade"),
+    primaryKey({ columns: [table.postId, table.userId], name: "likes_pkey" }),
   ]
 );

@@ -4,9 +4,9 @@ import {
   posts,
   users,
   comments,
-  likes,
   categories,
   postCategories,
+  likes,
 } from "./schema";
 
 export const postsRelations = relations(posts, ({ one, many }) => ({
@@ -19,8 +19,8 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
     references: [users.id],
   }),
   comments: many(comments),
-  likes: many(likes),
   postCategories: many(postCategories),
+  likes: many(likes),
 }));
 
 export const statusesRelations = relations(statuses, ({ many }) => ({
@@ -44,17 +44,6 @@ export const commentsRelations = relations(comments, ({ one }) => ({
   }),
 }));
 
-export const likesRelations = relations(likes, ({ one }) => ({
-  post: one(posts, {
-    fields: [likes.postId],
-    references: [posts.id],
-  }),
-  user: one(users, {
-    fields: [likes.userId],
-    references: [users.id],
-  }),
-}));
-
 export const postCategoriesRelations = relations(postCategories, ({ one }) => ({
   category: one(categories, {
     fields: [postCategories.categoryId],
@@ -68,4 +57,15 @@ export const postCategoriesRelations = relations(postCategories, ({ one }) => ({
 
 export const categoriesRelations = relations(categories, ({ many }) => ({
   postCategories: many(postCategories),
+}));
+
+export const likesRelations = relations(likes, ({ one }) => ({
+  post: one(posts, {
+    fields: [likes.postId],
+    references: [posts.id],
+  }),
+  user: one(users, {
+    fields: [likes.userId],
+    references: [users.id],
+  }),
 }));
