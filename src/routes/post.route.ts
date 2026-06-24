@@ -35,13 +35,13 @@ postRouter.put(
   CommentController.createComment
 );
 
-postRouter.patch(
+postRouter.put(
   "/:postId/like",
   [PostValidation.validatePostId, protectUser],
   PostController.likePost
 );
 
-postRouter.patch(
+postRouter.delete(
   "/:postId/unlike",
   [PostValidation.validatePostId, protectUser],
   PostController.unlikePost
